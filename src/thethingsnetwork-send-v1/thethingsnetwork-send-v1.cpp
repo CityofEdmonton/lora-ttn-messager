@@ -29,7 +29,6 @@
 #include <lmic.h>
 #include <hal.h>
 #include <local_hal.h>
-
 // LoRaWAN Application identifier (AppEUI)
 // Not used in this example
 static const u1_t APPEUI[8]  = { 0x02, 0x00, 0x00, 0x00, 0x00, 0xEE, 0xFF, 0xC0 };
@@ -84,15 +83,14 @@ lmic_pinmap pins = {
 
 void onEvent (ev_t ev) {
     //debug_event(ev);
-
     switch(ev) {
       // scheduled data sent (optionally data received)
       // note: this includes the receive window!
       case EV_TXCOMPLETE:
           // use this event to keep track of actual transmissions
           fprintf(stdout, "Event EV_TXCOMPLETE, time: %d\n", millis() / 1000);
-	 // fwrite(&mydata, 1, 1, stdout);
-	 // fflush(stdout);
+//	  fwrite(&mydata, 1, 5, stdout);
+//	  fflush(stdout);
           if(LMIC.dataLen) { // data received in rx slot after tx
               //debug_buf(LMIC.frame+LMIC.dataBeg, LMIC.dataLen);
               fprintf(stdout, "Data Received!\n");
@@ -103,15 +101,19 @@ void onEvent (ev_t ev) {
     }
 }
 
+// Use this to communicate with python using pipes!!!
 u1_t * readData(){
-    char buf[50];
-    sprintf(buf, "test string");
+    u1_t * data;
+    char buf[5];
+//    sprintf(buf, "test string");
+
+    fread(buf,5,1, stdin);
     int i=0;
     while(buf[i]){
-	mydata[i] = buf[i];
+	data[i] = buf[i];
  	i++;
     }
-    return mydata;
+    return data;
 }
 
 static void do_send(osjob_t* j){
@@ -150,8 +152,7 @@ void setup() {
   LMIC_disableTracking ();
   // Stop listening for downstream data (periodical reception)
   LMIC_stopPingable();
-  // Set data rate and transmit power (note: txpow seems to be ignored by the library)
-  LMIC_setDrTxpow(DR_SF7,14);
+  // Set data rate and transmit power (note: txpow seems to be ignored by the library)  LMIC_setDrTxpow(DR_SF7,14);
   // TTN uses SF9 for its RX2 window
   LMIC.dn2Dr = DR_SF9;
 }
@@ -160,7 +161,9 @@ int main() {
   
   setup();
   do_send(&sendjob);
-  os_runloop();
+  while(1){
+    os_runloop();
+  }
   return 0;
 }
 
