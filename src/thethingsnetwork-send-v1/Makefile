@@ -1,4 +1,4 @@
-CFLAGS=-I../../lmic
+CFLAGS=-g -I../../lmic
 LDFLAGS=-lwiringPi
 
 thethingsnetwork-send-v1: thethingsnetwork-send-v1.cpp

@@ -1,0 +1,26 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+	  {
+		"name": "C++ Launch",
+		"type": "cppdbg",
+		"request": "launch",
+		"program": "${workspaceRoot}/src/thethingsnetwork-send-v1/thethingsnetwork-send-v1",
+		"miDebuggerServerAddress": "localhost:9091",
+		"args": [],
+		"stopAtEntry": false,
+		"cwd": "${workspaceRoot}/src/thethingsnetwork-send-v1/",
+		"environment": [],
+		"externalConsole": true,
+		"linux": {
+		  "MIMode": "gdb"
+		},
+		"osx": {
+		  "MIMode": "gdb"
+		},
+		"windows": {
+		  "MIMode": "gdb"
+		}
+	  }
+	]
+  }
