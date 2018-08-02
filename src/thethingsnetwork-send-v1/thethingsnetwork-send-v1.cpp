@@ -29,6 +29,7 @@
 #include <lmic.h>
 #include <hal.h>
 #include <local_hal.h>
+
 // LoRaWAN Application identifier (AppEUI)
 // Not used in this example
 static const u1_t APPEUI[8]  = { 0x02, 0x00, 0x00, 0x00, 0x00, 0xEE, 0xFF, 0xC0 };
@@ -69,7 +70,7 @@ void os_getDevKey (u1_t* buf) {
 }
 
 u4_t cntr=0;
-u1_t * mydata;
+u1_t mydata[] = {"   "};
 static osjob_t sendjob;
 
 // Pin mapping
@@ -102,18 +103,19 @@ void onEvent (ev_t ev) {
 }
 
 // Use this to communicate with python using pipes!!!
-u1_t * readData(){
-    u1_t * data;
-    char buf[5];
-//    sprintf(buf, "test string");
-
-    fread(buf,5,1, stdin);
+void readData(){
+    char buf[8];
+    //char m;
+    //m = 'y';
+    fprintf(stdout, "waiting");
+//    fprintf(stdout, "buf size: %d", sizeof(&buf));
+//    fprintf(stdout, "mydata size: %d", sizeof(&mydata));
+    fscanf(stdin,"%s",&buf);
     int i=0;
     while(buf[i]){
-	data[i] = buf[i];
+	mydata[i] = buf[i];
  	i++;
     }
-    return data;
 }
 
 static void do_send(osjob_t* j){
@@ -124,11 +126,11 @@ static void do_send(osjob_t* j){
     if (LMIC.opmode & (1 << 7)) {
       fprintf(stdout, "OP_TXRXPEND, not sending");
     } else {
-      mydata = readData();
-      LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
+      readData();
+      LMIC_setTxData2(1,  mydata, sizeof(mydata), 0);
     }
     // Schedule a timed job to run at the given timestamp (absolute system time)
-    os_setTimedCallback(j, os_getTime()+sec2osticks(15), do_send);
+    os_setTimedCallback(j, os_getTime()+sec2osticks(20), do_send);
          
 }
 
